@@ -43,6 +43,7 @@ func (bt *Hackybeat) Config(b *beat.Beat) error {
 }
 
 func (bt *Hackybeat) Setup(b *beat.Beat) error {
+	logp.Debug("hackybeat", "Setup Hackybeat")
 	bt.client = b.Events // 'Events' is the publisher.Client of the Beat struct
 
 	// isn't this redundant with what is in New() ?
@@ -81,5 +82,6 @@ func (bt *Hackybeat) Stop() {
 }
 
 func (bt *Hackybeat) Cleanup(b *beat.Beat) error {
+	logp.Debug("hackybeat", "Cleanup Hackybeat")
 	return nil
 }
