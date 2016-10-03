@@ -9,8 +9,12 @@ import (
 )
 
 func main() {
-	err := beat.Run("hackybeat", "", beater.New)
-	if err != nil {
+	// err := beat.Run("hackybeat", "", beater.New)
+	// if err != nil {
+	// 	os.Exit(1)
+	// }
+
+	if err := beat.Run("hackybeat", "", beater.New()); err != nil {
 		os.Exit(1)
 	}
 }
