@@ -27,7 +27,7 @@ func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
 	}
 
 	bt := &Hackybeat{
-		done: make(chan struct{}),
+		done:   make(chan struct{}),
 		config: config,
 	}
 	return bt, nil
@@ -42,6 +42,7 @@ func (bt *Hackybeat) Run(b *beat.Beat) error {
 	for {
 		select {
 		case <-bt.done:
+			logp.Debug("hackybeat", "case <-bt.done")
 			return nil
 		case <-ticker.C:
 		}
