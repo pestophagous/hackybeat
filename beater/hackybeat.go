@@ -19,6 +19,7 @@ type Hackybeat struct {
 }
 
 func New() *Hackybeat {
+	logp.Debug("hackybeat", "New Hackybeat")
 	return &Hackybeat{
 		done:   make(chan struct{}),
 		config: config.DefaultConfig,
@@ -26,6 +27,7 @@ func New() *Hackybeat {
 }
 
 func (bt *Hackybeat) Config(b *beat.Beat) error {
+	logp.Debug("hackybeat", "Config Hackybeat")
 	//read config file
 
 	// err := cfgfile.Read(&ab.AbConfig, "")
