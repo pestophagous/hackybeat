@@ -1,0 +1,5 @@
+= Hackybeat Docs
+
+Welcome to the Hackybeat documentation.
+
+
