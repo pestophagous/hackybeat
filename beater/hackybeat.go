@@ -20,22 +20,9 @@ type Hackybeat struct {
 
 func New() *Hackybeat {
 	return &Hackybeat{
-		done: make(chan struct{}),
-	}
-}
-
-// Creates beater
-func Newx(b *beat.Beat /*, cfg *common.Config*/) (beat.Beater, error) {
-	config := config.DefaultConfig
-	// if err := cfg.Unpack(&config); err != nil {
-	// 	return nil, fmt.Errorf("Error reading config file: %v", err)
-	// }
-
-	bt := &Hackybeat{
 		done:   make(chan struct{}),
-		config: config,
+		config: config.DefaultConfig,
 	}
-	return bt, nil
 }
 
 func (bt *Hackybeat) Config(b *beat.Beat) error {
@@ -47,12 +34,17 @@ func (bt *Hackybeat) Config(b *beat.Beat) error {
 	// 	return err
 	// }
 
+	// this should be redundant with what is in New, right?
+	bt.config = config.DefaultConfig
+
 	return nil
 }
 
 func (bt *Hackybeat) Setup(b *beat.Beat) error {
-	//ab.events = b.Events
-	//ab.done = make(chan struct{})
+	bt.client = b.Events // 'Events' is the publisher.Client of the Beat struct
+
+	// isn't this redundant with what is in New() ?
+	bt.done = make(chan struct{})
 
 	return nil
 }
@@ -82,7 +74,7 @@ func (bt *Hackybeat) Run(b *beat.Beat) error {
 }
 
 func (bt *Hackybeat) Stop() {
-	//bt.client.Close()
+	logp.Debug("hackybeat", "Stop Hackybeat")
 	close(bt.done)
 }
 
