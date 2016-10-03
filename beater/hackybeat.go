@@ -10,12 +10,14 @@ import (
 	"github.com/elastic/beats/libbeat/publisher"
 
 	"github.com/pestophagous/hackybeat/config"
+	"github.com/pestophagous/hackybeat/rss-poll"
 )
 
 type Hackybeat struct {
 	done   chan struct{}
 	config config.Config
 	client publisher.Client
+	poller *rsspoll.Poller
 }
 
 // Creates beater
@@ -35,6 +37,9 @@ func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
 
 func (bt *Hackybeat) Run(b *beat.Beat) error {
 	logp.Info("hackybeat is running! Hit CTRL-C to stop it.")
+
+	bt.poller = rsspoll.NewPoller()
+	bt.poller.BeginBackgroundPolling()
 
 	bt.client = b.Publisher.Connect()
 	ticker := time.NewTicker(bt.config.Period)
@@ -59,6 +64,7 @@ func (bt *Hackybeat) Run(b *beat.Beat) error {
 }
 
 func (bt *Hackybeat) Stop() {
+	bt.poller.Stop()
 	logp.Debug("hackybeat", "Stop Hackybeat")
 	bt.client.Close()
 	close(bt.done)
