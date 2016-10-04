@@ -10,6 +10,7 @@ import (
 	"github.com/elastic/beats/libbeat/publisher"
 
 	"github.com/pestophagous/hackybeat/config"
+	lpkg "github.com/pestophagous/hackybeat/logger"
 	"github.com/pestophagous/hackybeat/rss-poll"
 )
 
@@ -38,7 +39,7 @@ func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
 func (bt *Hackybeat) Run(b *beat.Beat) error {
 	logp.Info("hackybeat is running! Hit CTRL-C to stop it.")
 
-	bt.poller = rsspoll.NewPoller(&rsspoll.LogAdapter{
+	bt.poller = rsspoll.NewPoller(&lpkg.LogAdapter{
 		Err:  logp.Err,
 		Warn: logp.Info,
 		Info: logp.Info,

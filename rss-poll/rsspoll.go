@@ -5,60 +5,20 @@ import (
 	"time"
 
 	rss "github.com/jteeuwen/go-pkg-rss"
+	lpkg "github.com/pestophagous/hackybeat/logger"
 )
 
 const rssUri = "http://stackoverflow.com/feeds/tag?tagnames=go%20or%20goroutine%20or%20json%20or%20python%20or%20c%2b%2b%20or%20git%20or%20linux%20or%20gdb%20or%20xcode&sort=newest"
 
-type LogAdapter struct {
-	Err   func(format string, v ...interface{})
-	Warn  func(format string, v ...interface{})
-	Info  func(format string, v ...interface{})
-	Debug func(format string, v ...interface{})
-}
-
-type LogWithNilCheck struct {
-	l *LogAdapter
-}
-
-// Our internal LogAdapter field most likely consists of a bunch of closures that are
-// capturing referencs to who-knows-what.  We might at times like to release these references.
-func (this *LogWithNilCheck) ReleaseLog() {
-	this.l = nil
-}
-
-func (this *LogWithNilCheck) Err(format string, v ...interface{}) {
-	if this.l != nil {
-		this.l.Err(format, v...)
-	}
-}
-
-func (this *LogWithNilCheck) Warn(format string, v ...interface{}) {
-	if this.l != nil {
-		this.l.Warn(format, v...)
-	}
-}
-
-func (this *LogWithNilCheck) Info(format string, v ...interface{}) {
-	if this.l != nil {
-		this.l.Info(format, v...)
-	}
-}
-
-func (this *LogWithNilCheck) Debug(format string, v ...interface{}) {
-	if this.l != nil {
-		this.l.Debug(format, v...)
-	}
-}
-
 type polledFeed struct {
 	f      *rss.Feed
-	logger *LogWithNilCheck
+	logger *lpkg.LogWithNilCheck
 }
 
-func newPolledFeed(log *LogAdapter) *polledFeed {
+func newPolledFeed(log *lpkg.LogAdapter) *polledFeed {
 	p := new(polledFeed)
 	p.f = rss.New(5, true, p.chanHandler, p.itemHandler)
-	p.logger = &LogWithNilCheck{log}
+	p.logger = &lpkg.LogWithNilCheck{log}
 	return p
 }
 
@@ -76,15 +36,15 @@ type Poller struct {
 	stopperChan chan bool
 	waitGroup   *sync.WaitGroup
 	pf          *polledFeed
-	logger      *LogWithNilCheck
+	logger      *lpkg.LogWithNilCheck
 }
 
-func NewPoller(log *LogAdapter) *Poller {
+func NewPoller(log *lpkg.LogAdapter) *Poller {
 	p := &Poller{
 		stopperChan: make(chan bool),
 		waitGroup:   &sync.WaitGroup{},
 		pf:          newPolledFeed(log),
-		logger:      &LogWithNilCheck{log},
+		logger:      &lpkg.LogWithNilCheck{log},
 	}
 
 	return p
