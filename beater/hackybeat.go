@@ -9,6 +9,7 @@ import (
 	"github.com/elastic/beats/libbeat/logp"
 	"github.com/elastic/beats/libbeat/publisher"
 
+	"github.com/pestophagous/hackybeat/beater/pollables"
 	"github.com/pestophagous/hackybeat/config"
 	lpkg "github.com/pestophagous/hackybeat/logger"
 	"github.com/pestophagous/hackybeat/poller"
@@ -39,14 +40,17 @@ func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
 func (bt *Hackybeat) Run(b *beat.Beat) error {
 	logp.Info("hackybeat is running! Hit CTRL-C to stop it.")
 
-	bt.poller = poller.NewPoller(&lpkg.LogAdapter{
+	loga := &lpkg.LogAdapter{
 		Err:  logp.Err,
 		Warn: logp.Info,
 		Info: logp.Info,
 		Debug: func(format string, v ...interface{}) {
 			logp.Debug("hackybeat", format, v)
 		},
-	})
+	}
+
+	bt.poller = poller.NewPoller(loga, pollables.NewPolledFeed(loga))
+
 	bt.poller.BeginBackgroundPolling()
 
 	bt.client = b.Publisher.Connect()
