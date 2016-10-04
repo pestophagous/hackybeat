@@ -1,4 +1,4 @@
-package rsspoll
+package poller
 
 import (
 	"sync"

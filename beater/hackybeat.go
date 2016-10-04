@@ -11,14 +11,14 @@ import (
 
 	"github.com/pestophagous/hackybeat/config"
 	lpkg "github.com/pestophagous/hackybeat/logger"
-	"github.com/pestophagous/hackybeat/rss-poll"
+	"github.com/pestophagous/hackybeat/poller"
 )
 
 type Hackybeat struct {
 	done   chan struct{}
 	config config.Config
 	client publisher.Client
-	poller *rsspoll.Poller
+	poller *poller.Poller
 }
 
 // Creates beater
@@ -39,7 +39,7 @@ func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
 func (bt *Hackybeat) Run(b *beat.Beat) error {
 	logp.Info("hackybeat is running! Hit CTRL-C to stop it.")
 
-	bt.poller = rsspoll.NewPoller(&lpkg.LogAdapter{
+	bt.poller = poller.NewPoller(&lpkg.LogAdapter{
 		Err:  logp.Err,
 		Warn: logp.Info,
 		Info: logp.Info,
