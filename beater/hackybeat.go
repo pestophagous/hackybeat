@@ -38,7 +38,14 @@ func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
 func (bt *Hackybeat) Run(b *beat.Beat) error {
 	logp.Info("hackybeat is running! Hit CTRL-C to stop it.")
 
-	bt.poller = rsspoll.NewPoller()
+	bt.poller = rsspoll.NewPoller(&rsspoll.LogAdapter{
+		Err:  logp.Err,
+		Warn: logp.Info,
+		Info: logp.Info,
+		Debug: func(format string, v ...interface{}) {
+			logp.Debug("hackybeat", format, v)
+		},
+	})
 	bt.poller.BeginBackgroundPolling()
 
 	bt.client = b.Publisher.Connect()

@@ -1,8 +1,6 @@
 package rsspoll
 
 import (
-	"fmt"
-	"os"
 	"sync"
 	"time"
 
@@ -11,22 +9,31 @@ import (
 
 const rssUri = "http://stackoverflow.com/feeds/tag?tagnames=go%20or%20goroutine%20or%20json%20or%20python%20or%20c%2b%2b%20or%20git%20or%20linux%20or%20gdb%20or%20xcode&sort=newest"
 
+type LogAdapter struct {
+	Err   func(format string, v ...interface{})
+	Warn  func(format string, v ...interface{})
+	Info  func(format string, v ...interface{})
+	Debug func(format string, v ...interface{})
+}
+
 type polledFeed struct {
-	f *rss.Feed
+	f      *rss.Feed
+	logger *LogAdapter
 }
 
-func newPolledFeed() *polledFeed {
-	return &polledFeed{
-		f: rss.New(5, true, chanHandler, itemHandler),
-	}
+func newPolledFeed(log *LogAdapter) *polledFeed {
+	p := new(polledFeed)
+	p.f = rss.New(5, true, p.chanHandler, p.itemHandler)
+	p.logger = log
+	return p
 }
 
-func chanHandler(feed *rss.Feed, newchannels []*rss.Channel) {
-	fmt.Printf("%d new channel(s) in %s\n", len(newchannels), feed.Url)
+func (this *polledFeed) chanHandler(feed *rss.Feed, newchannels []*rss.Channel) {
+	this.logger.Info("%d new channel(s) in %s\n", len(newchannels), feed.Url)
 }
 
-func itemHandler(feed *rss.Feed, ch *rss.Channel, newitems []*rss.Item) {
-	fmt.Printf("%d new item(s) in %s\n", len(newitems), feed.Url)
+func (this *polledFeed) itemHandler(feed *rss.Feed, ch *rss.Channel, newitems []*rss.Item) {
+	this.logger.Info("%d new item(s) in %s\n", len(newitems), feed.Url)
 }
 
 // ---------------------------------------------------------
@@ -35,13 +42,15 @@ type Poller struct {
 	stopperChan chan bool
 	waitGroup   *sync.WaitGroup
 	pf          *polledFeed
+	logger      *LogAdapter
 }
 
-func NewPoller() *Poller {
+func NewPoller(log *LogAdapter) *Poller {
 	p := &Poller{
 		stopperChan: make(chan bool),
 		waitGroup:   &sync.WaitGroup{},
-		pf:          newPolledFeed(),
+		pf:          newPolledFeed(log),
+		logger:      log,
 	}
 
 	return p
@@ -65,15 +74,15 @@ func (this *Poller) launchPolling() {
 			case <-timer.C:
 				// when Fetch finds new information, execution will enter chanHandler and/or itemHandler
 				if err := this.pf.f.Fetch(rssUri, nil); err != nil {
-					fmt.Fprintf(os.Stderr, "[e] %s: %s\n", rssUri, err)
+					this.logger.Err("[e] %s: %s\n", rssUri, err)
 				}
 
 				// let the feed tell us (via SecondsTillUpdate) when it thinks we should call Fetch again
 				if next := this.pf.f.SecondsTillUpdate() * 1e9; next > 60*1e9 {
-					fmt.Println(next)
+					this.logger.Debug("%v", next)
 					timer = time.NewTicker(time.Duration(next))
 				} else {
-					fmt.Println("sixty")
+					this.logger.Debug("sixty")
 					timer = time.NewTicker(time.Second * 60)
 				}
 			}
@@ -86,4 +95,7 @@ func (this *Poller) launchPolling() {
 func (this *Poller) Stop() {
 	close(this.stopperChan)
 	this.waitGroup.Wait()
+	// func objects on LogAdapter may hold references to foreign code. Release the refs:
+	this.pf.logger = nil
+	this.logger = nil
 }
