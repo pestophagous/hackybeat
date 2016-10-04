@@ -16,15 +16,49 @@ type LogAdapter struct {
 	Debug func(format string, v ...interface{})
 }
 
+type LogWithNilCheck struct {
+	l *LogAdapter
+}
+
+// Our internal LogAdapter field most likely consists of a bunch of closures that are
+// capturing referencs to who-knows-what.  We might at times like to release these references.
+func (this *LogWithNilCheck) ReleaseLog() {
+	this.l = nil
+}
+
+func (this *LogWithNilCheck) Err(format string, v ...interface{}) {
+	if this.l != nil {
+		this.l.Err(format, v...)
+	}
+}
+
+func (this *LogWithNilCheck) Warn(format string, v ...interface{}) {
+	if this.l != nil {
+		this.l.Warn(format, v...)
+	}
+}
+
+func (this *LogWithNilCheck) Info(format string, v ...interface{}) {
+	if this.l != nil {
+		this.l.Info(format, v...)
+	}
+}
+
+func (this *LogWithNilCheck) Debug(format string, v ...interface{}) {
+	if this.l != nil {
+		this.l.Debug(format, v...)
+	}
+}
+
 type polledFeed struct {
 	f      *rss.Feed
-	logger *LogAdapter
+	logger *LogWithNilCheck
 }
 
 func newPolledFeed(log *LogAdapter) *polledFeed {
 	p := new(polledFeed)
 	p.f = rss.New(5, true, p.chanHandler, p.itemHandler)
-	p.logger = log
+	p.logger = &LogWithNilCheck{log}
 	return p
 }
 
@@ -42,7 +76,7 @@ type Poller struct {
 	stopperChan chan bool
 	waitGroup   *sync.WaitGroup
 	pf          *polledFeed
-	logger      *LogAdapter
+	logger      *LogWithNilCheck
 }
 
 func NewPoller(log *LogAdapter) *Poller {
@@ -50,7 +84,7 @@ func NewPoller(log *LogAdapter) *Poller {
 		stopperChan: make(chan bool),
 		waitGroup:   &sync.WaitGroup{},
 		pf:          newPolledFeed(log),
-		logger:      log,
+		logger:      &LogWithNilCheck{log},
 	}
 
 	return p
@@ -96,6 +130,6 @@ func (this *Poller) Stop() {
 	close(this.stopperChan)
 	this.waitGroup.Wait()
 	// func objects on LogAdapter may hold references to foreign code. Release the refs:
-	this.pf.logger = nil
-	this.logger = nil
+	this.pf.logger.ReleaseLog()
+	this.logger.ReleaseLog()
 }
