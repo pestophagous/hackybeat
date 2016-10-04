@@ -49,11 +49,12 @@ func (bt *Hackybeat) Run(b *beat.Beat) error {
 		},
 	}
 
-	bt.poller = poller.NewPoller(loga, pollables.NewPolledFeed(loga))
+	bt.client = b.Publisher.Connect()
+
+	bt.poller = poller.NewPoller(loga, pollables.NewPolledFeed(loga, &pollables.RssItemToBeatEvent{DoPublish: bt.client.PublishEvent}))
 
 	bt.poller.BeginBackgroundPolling()
 
-	bt.client = b.Publisher.Connect()
 	ticker := time.NewTicker(bt.config.Period)
 	counter := 1
 	for {
