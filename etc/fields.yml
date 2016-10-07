@@ -2,8 +2,20 @@
   title: hackybeat
   description:
   fields:
-    - name: counter
-      type: long
+    - name: title
+      type: string
       required: true
       description: >
-        PLEASE UPDATE DOCUMENTATION
+        the stackoverflow question heading
+
+    - name: author
+      type: dict
+      required: true
+      description: >
+        the stackoverflow user posting the question
+
+    - name: categories
+      type: list
+      required: true
+      description: >
+        the stackoverflow tags on this question
