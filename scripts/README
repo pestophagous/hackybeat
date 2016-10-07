@@ -1,0 +1,9 @@
+# cd scripts/
+# virtualenv env
+# . env/bin/activate
+# pip install -r requirements.txt
+
+./generate_index_pattern.py --index 'logstash-*' --beat  /Users/someone/int/tobuild/mybeat/github.com/pestophagous/hackybeat  --libbeat /Users/someone/int/tobuild/pull-only-official-beats/libbeat/
+
+# deactivate
+
