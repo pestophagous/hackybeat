@@ -7,6 +7,20 @@ type LogAdapter struct {
 	Debug func(format string, v ...interface{})
 }
 
+func noop(format string, v ...interface{}) {
+}
+
+func NewNoopLogAdapter() *LogAdapter {
+	l := &LogAdapter{
+		Err:   noop,
+		Warn:  noop,
+		Info:  noop,
+		Debug: noop,
+	}
+
+	return l
+}
+
 type LogWithNilCheck struct {
 	L *LogAdapter
 }
