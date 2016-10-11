@@ -43,25 +43,29 @@ func (this *Poller) launchPolling() {
 	go func() {
 		defer this.waitGroup.Done()
 
-		timer := time.NewTicker(time.Millisecond) // <-- set to 'virtually nothing' the first time through
+		timer := this.pollThenComputeNextInterval()
 
 		for {
 			select {
 			case <-this.stopperChan:
 				return
 			case <-timer.C:
-				var nextAt time.Duration = this.poll.DoPoll()
-
-				if nextAt < briefestAllowedGap {
-					// log what the 'offending' nextAt was before we overwrite it
-					this.logger.Info("Refusing pollable's short interval of: %s. Instead will use: %s.", nextAt, briefestAllowedGap)
-					nextAt = briefestAllowedGap
-				}
-
-				timer = time.NewTicker(nextAt)
+				timer = this.pollThenComputeNextInterval()
 			}
 		}
 	}()
+}
+
+func (this *Poller) pollThenComputeNextInterval() *time.Ticker {
+	var nextAt time.Duration = this.poll.DoPoll()
+
+	if nextAt < briefestAllowedGap {
+		// log what the 'offending' nextAt was before we overwrite it
+		this.logger.Info("Refusing pollable's short interval of: %s. Instead will use: %s.", nextAt, briefestAllowedGap)
+		nextAt = briefestAllowedGap
+	}
+
+	return time.NewTicker(nextAt)
 }
 
 // Stop the poller by closing the poller's channel.  Block until the poller
