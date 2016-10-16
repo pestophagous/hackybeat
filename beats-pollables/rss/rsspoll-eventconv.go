@@ -1,4 +1,4 @@
-package pollables
+package rsspoll
 
 import (
 	"time"
@@ -17,7 +17,7 @@ type RssItemToBeatEvent struct {
 	DoPublish func(event common.MapStr, opts ...publisher.ClientOption) bool
 }
 
-// pollables.polledFeed calls here when an Item is ready. this method converts and forwards the item to libbeat publisher
+// type polledFeed struct calls here when an Item is ready. this method converts and forwards the item to libbeat publisher
 func (this *RssItemToBeatEvent) ReceiveRssItem(item *rss.Item) {
 
 	var pubDate time.Time

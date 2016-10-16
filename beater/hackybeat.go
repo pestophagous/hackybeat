@@ -9,10 +9,10 @@ import (
 	"github.com/elastic/beats/libbeat/logp"
 	"github.com/elastic/beats/libbeat/publisher"
 
-	"github.com/pestophagous/hackybeat/beater/pollables"
+	rsspoll "github.com/pestophagous/hackybeat/beats-pollables/rss"
 	"github.com/pestophagous/hackybeat/config"
-	lpkg "github.com/pestophagous/hackybeat/logger"
-	"github.com/pestophagous/hackybeat/poller"
+	lpkg "github.com/pestophagous/hackybeat/util/logger"
+	"github.com/pestophagous/hackybeat/util/poller"
 )
 
 type Hackybeat struct {
@@ -51,7 +51,7 @@ func (bt *Hackybeat) Run(b *beat.Beat) error {
 
 	bt.client = b.Publisher.Connect()
 
-	bt.poller = poller.NewPoller(loga, pollables.NewPolledFeed(loga, &pollables.RssItemToBeatEvent{DoPublish: bt.client.PublishEvent}))
+	bt.poller = poller.NewPoller(loga, rsspoll.NewPolledFeed(loga, &rsspoll.RssItemToBeatEvent{DoPublish: bt.client.PublishEvent}))
 
 	bt.poller.BeginBackgroundPolling()
 

@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	lpkg "github.com/pestophagous/hackybeat/logger"
+	lpkg "github.com/pestophagous/hackybeat/util/logger"
 )
 
 type Pollable interface {

@@ -1,10 +1,10 @@
-package pollables
+package rsspoll
 
 import (
 	"time"
 
 	rss "github.com/jteeuwen/go-pkg-rss"
-	lpkg "github.com/pestophagous/hackybeat/logger"
+	lpkg "github.com/pestophagous/hackybeat/util/logger"
 )
 
 const rssUri = "http://stackoverflow.com/feeds/tag?tagnames=go%20or%20goroutine%20or%20json%20or%20python%20or%20c%2b%2b%20or%20git%20or%20linux%20or%20gdb%20or%20xcode&sort=newest"
