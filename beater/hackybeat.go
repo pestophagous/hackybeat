@@ -2,7 +2,6 @@ package beater
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/elastic/beats/libbeat/beat"
 	"github.com/elastic/beats/libbeat/common"
@@ -55,24 +54,10 @@ func (bt *Hackybeat) Run(b *beat.Beat) error {
 
 	bt.poller.BeginBackgroundPolling()
 
-	ticker := time.NewTicker(bt.config.Period)
-	counter := 1
-	for {
-		select {
-		case <-bt.done:
-			logp.Debug("hackybeat", "case <-bt.done")
-			return nil
-		case <-ticker.C:
-		}
-
-		event := common.MapStr{
-			"@timestamp": common.Time(time.Now()),
-			"type":       b.Name,
-			"counter":    counter,
-		}
-		bt.client.PublishEvent(event)
-		logp.Info("Event sent")
-		counter++
+	select {
+	case <-bt.done:
+		logp.Debug("hackybeat", "case <-bt.done")
+		return nil
 	}
 }
 
