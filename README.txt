@@ -28,20 +28,20 @@ kibana should then show a page with 'This page lists every field in the logstash
 
     it should (among other things) contain:
 
-      author.Email        string (analyzed & indexed)
-      author.Email.raw        string (indexed)
+      author.Email       string (analyzed & indexed)
+      author.Email.raw   string (indexed)
 
       author.Name        string (analyzed & indexed)
-      author.Name.raw        string (indexed)
+      author.Name.raw    string (indexed)
 
-      author.Uri        string (analyzed & indexed)
-      author.Uri.raw        string (indexed)
+      author.Uri         string (analyzed & indexed)
+      author.Uri.raw     string (indexed)
 
-      categories        string (analyzed & indexed)
-      categories.raw        string (indexed)
+      categories         string (analyzed & indexed)
+      categories.raw     string (indexed)
 
-      title        string (analyzed & indexed)
-      title.raw        string (indexed)
+      title              string (analyzed & indexed)
+      title.raw          string (indexed)
 
 
 it is then possible to make a visualization by categories. it looks like this:
