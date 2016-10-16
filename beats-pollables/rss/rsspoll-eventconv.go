@@ -15,6 +15,16 @@ func init() {
 	pollcommon.RegisterPoller(p)
 }
 
+func choosyAppend(strings []string, s string) []string {
+	// maybe later we'll do more sophisticated filtering using trimming or removal of 'gremlin' chars
+	result := strings
+	if len(s) > 0 {
+		result = append(result, s)
+	}
+
+	return result
+}
+
 // type polledFeed struct calls here when an Item is ready. this method converts and forwards the item to libbeat publisher
 func receiveRssItem(item *rss.Item) {
 
@@ -26,8 +36,8 @@ func receiveRssItem(item *rss.Item) {
 
 	var categories []string
 	for _, c := range item.Categories {
-		categories = append(categories, c.Domain) // <-- apparently always an empty string, but i'll use it just in case!
-		categories = append(categories, c.Text)   // <-- definitely known to contain a meaningful string value
+		categories = choosyAppend(categories, c.Domain) // <-- apparently always an empty string, but we'll check it just in case!
+		categories = choosyAppend(categories, c.Text)   // <-- definitely known to contain a meaningful string value
 	}
 
 	// At a minimum, the event object must contain a @timestamp field and a type field. Beyond that, events can contain
