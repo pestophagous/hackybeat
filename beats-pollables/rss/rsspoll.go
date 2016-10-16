@@ -12,10 +12,10 @@ const rssUri = "http://stackoverflow.com/feeds/tag?tagnames=go%20or%20goroutine%
 type polledFeed struct {
 	feed     *rss.Feed
 	logger   *lpkg.LogWithNilCheck
-	callback RssItemCallback
+	callback func(item *rss.Item)
 }
 
-func NewPolledFeed(log *lpkg.LogAdapter, conv RssItemCallback) *polledFeed {
+func newPolledFeed(log *lpkg.LogAdapter, conv func(item *rss.Item)) *polledFeed {
 	p := new(polledFeed)
 	p.feed = rss.New(5, true, p.chanHandler, p.itemHandler)
 	p.logger = &lpkg.LogWithNilCheck{log}
@@ -30,7 +30,7 @@ func (this *polledFeed) chanHandler(feed *rss.Feed, newchannels []*rss.Channel) 
 func (this *polledFeed) itemHandler(feed *rss.Feed, ch *rss.Channel, newitems []*rss.Item) {
 	this.logger.Info("%d new item(s) in %s\n", len(newitems), feed.Url)
 	for _, item := range newitems {
-		this.callback.ReceiveRssItem(item)
+		this.callback(item)
 	}
 }
 

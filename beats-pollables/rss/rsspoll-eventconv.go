@@ -4,21 +4,19 @@ import (
 	"time"
 
 	"github.com/elastic/beats/libbeat/common"
-	"github.com/elastic/beats/libbeat/publisher"
 	rss "github.com/jteeuwen/go-pkg-rss"
+
+	pollcommon "github.com/pestophagous/hackybeat/beats-pollables/common"
+	"github.com/pestophagous/hackybeat/util/poller"
 )
 
-// Benefit of this interface: pollables.polledFeed does not know about types in libbeat
-type RssItemCallback interface {
-	ReceiveRssItem(item *rss.Item)
-}
-
-type RssItemToBeatEvent struct {
-	DoPublish func(event common.MapStr, opts ...publisher.ClientOption) bool
+func init() {
+	p := poller.NewPoller(pollcommon.Logger, newPolledFeed(pollcommon.Logger, receiveRssItem))
+	pollcommon.RegisterPoller(p)
 }
 
 // type polledFeed struct calls here when an Item is ready. this method converts and forwards the item to libbeat publisher
-func (this *RssItemToBeatEvent) ReceiveRssItem(item *rss.Item) {
+func receiveRssItem(item *rss.Item) {
 
 	var pubDate time.Time
 	pubDate, err := item.ParsedPubDate()
@@ -41,5 +39,6 @@ func (this *RssItemToBeatEvent) ReceiveRssItem(item *rss.Item) {
 		"author":     item.Author,
 		"categories": categories,
 	}
-	this.DoPublish(event)
+
+	pollcommon.BeatsPublish(event)
 }

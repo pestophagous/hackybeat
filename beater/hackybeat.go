@@ -8,9 +8,10 @@ import (
 	"github.com/elastic/beats/libbeat/logp"
 	"github.com/elastic/beats/libbeat/publisher"
 
-	rsspoll "github.com/pestophagous/hackybeat/beats-pollables/rss"
+	_ "github.com/pestophagous/hackybeat/beats-pollables/register"
+
+	pollcommon "github.com/pestophagous/hackybeat/beats-pollables/common"
 	"github.com/pestophagous/hackybeat/config"
-	lpkg "github.com/pestophagous/hackybeat/util/logger"
 	"github.com/pestophagous/hackybeat/util/poller"
 )
 
@@ -18,7 +19,6 @@ type Hackybeat struct {
 	done   chan struct{}
 	config config.Config
 	client publisher.Client
-	poller *poller.Poller
 }
 
 // Creates beater
@@ -39,20 +39,11 @@ func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
 func (bt *Hackybeat) Run(b *beat.Beat) error {
 	logp.Info("hackybeat is running! Hit CTRL-C to stop it.")
 
-	loga := &lpkg.LogAdapter{
-		Err:  logp.Err,
-		Warn: logp.Info,
-		Info: logp.Info,
-		Debug: func(format string, v ...interface{}) {
-			logp.Debug("hackybeat", format, v)
-		},
-	}
-
 	bt.client = b.Publisher.Connect()
 
-	bt.poller = poller.NewPoller(loga, rsspoll.NewPolledFeed(loga, &rsspoll.RssItemToBeatEvent{DoPublish: bt.client.PublishEvent}))
+	pollcommon.PublisherFunc = bt.client.PublishEvent
 
-	bt.poller.BeginBackgroundPolling()
+	pollcommon.ApplyToAllPollers((*poller.Poller).BeginBackgroundPolling)
 
 	select {
 	case <-bt.done:
@@ -62,7 +53,7 @@ func (bt *Hackybeat) Run(b *beat.Beat) error {
 }
 
 func (bt *Hackybeat) Stop() {
-	bt.poller.Stop()
+	pollcommon.ApplyToAllPollers((*poller.Poller).Stop)
 	logp.Debug("hackybeat", "Stop Hackybeat")
 	bt.client.Close()
 	close(bt.done)
