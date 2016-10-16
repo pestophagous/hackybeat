@@ -23,12 +23,12 @@ type Poller struct {
 	logger      *lpkg.LogWithNilCheck
 }
 
-func NewPoller(log *lpkg.LogAdapter, toBePolled Pollable) *Poller {
+func NewPoller(log *lpkg.LogWithNilCheck, toBePolled Pollable) *Poller {
 	p := &Poller{
 		stopperChan: make(chan bool),
 		waitGroup:   &sync.WaitGroup{},
 		poll:        toBePolled,
-		logger:      &lpkg.LogWithNilCheck{log},
+		logger:      log,
 	}
 
 	return p
@@ -73,7 +73,7 @@ func (this *Poller) pollThenComputeNextInterval() *time.Ticker {
 func (this *Poller) Stop() {
 	close(this.stopperChan)
 	this.waitGroup.Wait()
-	// func objects on LogAdapter may hold references to foreign code. Release the refs:
 	this.poll.OnShutdown()
+	// func objects in the log struct may hold references to foreign code. Release the refs:
 	this.logger.ReleaseLog()
 }

@@ -15,10 +15,10 @@ type polledFeed struct {
 	callback func(item *rss.Item)
 }
 
-func newPolledFeed(log *lpkg.LogAdapter, conv func(item *rss.Item)) *polledFeed {
+func newPolledFeed(log *lpkg.LogWithNilCheck, conv func(item *rss.Item)) *polledFeed {
 	p := new(polledFeed)
 	p.feed = rss.New(5, true, p.chanHandler, p.itemHandler)
-	p.logger = &lpkg.LogWithNilCheck{log}
+	p.logger = log
 	p.callback = conv
 	return p
 }

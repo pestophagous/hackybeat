@@ -21,7 +21,7 @@ func (this *simplePollable) OnShutdown() {
 
 func TestPollBasic(t *testing.T) {
 
-	logger := lpkg.NewNoopLogAdapter()
+	logger := lpkg.NewNoopLogWithNilCheck()
 	pollable := &simplePollable{}
 
 	poller := NewPoller(logger, pollable)

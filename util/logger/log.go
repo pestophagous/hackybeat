@@ -21,6 +21,10 @@ func NewNoopLogAdapter() *LogAdapter {
 	return l
 }
 
+func NewNoopLogWithNilCheck() *LogWithNilCheck {
+	return &LogWithNilCheck{NewNoopLogAdapter()}
+}
+
 type LogWithNilCheck struct {
 	L *LogAdapter
 }

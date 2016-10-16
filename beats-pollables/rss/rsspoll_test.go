@@ -15,8 +15,8 @@ func onItem(item *rss.Item) {
 func TestRssPollBasic(t *testing.T) {
 
 	var errorMsgs []string
-	logger := lpkg.NewNoopLogAdapter()
-	logger.Err = func(format string, v ...interface{}) {
+	logger := lpkg.NewNoopLogWithNilCheck()
+	logger.L.Err = func(format string, v ...interface{}) {
 		errorMsgs = append(errorMsgs, fmt.Sprintf(format, v...))
 	}
 

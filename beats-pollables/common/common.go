@@ -10,14 +10,14 @@ import (
 )
 
 // Logger should be the only log-sink used by any pollable. This will ensure consistent, centralized output.
-var Logger *lpkg.LogAdapter
+var Logger *lpkg.LogWithNilCheck
 
 var publisherFunc func(event common.MapStr, opts ...publisher.ClientOption) bool
 
 var pollers []*poller.Poller
 
 func init() {
-	Logger = &lpkg.LogAdapter{
+	log := &lpkg.LogAdapter{
 		Err:  logp.Err,
 		Warn: logp.Info,
 		Info: logp.Info,
@@ -25,6 +25,8 @@ func init() {
 			logp.Debug("hackybeat", format, v)
 		},
 	}
+
+	Logger = &lpkg.LogWithNilCheck{log}
 }
 
 // Call RegisterPoller to add a poller to the application.
