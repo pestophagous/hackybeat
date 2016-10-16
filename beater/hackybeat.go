@@ -12,7 +12,6 @@ import (
 
 	pollcommon "github.com/pestophagous/hackybeat/beats-pollables/common"
 	"github.com/pestophagous/hackybeat/config"
-	"github.com/pestophagous/hackybeat/util/poller"
 )
 
 type Hackybeat struct {
@@ -41,9 +40,9 @@ func (bt *Hackybeat) Run(b *beat.Beat) error {
 
 	bt.client = b.Publisher.Connect()
 
-	pollcommon.PublisherFunc = bt.client.PublishEvent
+	pollcommon.InstallPublisherFunc(bt.client.PublishEvent)
 
-	pollcommon.ApplyToAllPollers((*poller.Poller).BeginBackgroundPolling)
+	pollcommon.LaunchAllPollers()
 
 	select {
 	case <-bt.done:
@@ -53,7 +52,7 @@ func (bt *Hackybeat) Run(b *beat.Beat) error {
 }
 
 func (bt *Hackybeat) Stop() {
-	pollcommon.ApplyToAllPollers((*poller.Poller).Stop)
+	pollcommon.StopAllPollers()
 	logp.Debug("hackybeat", "Stop Hackybeat")
 	bt.client.Close()
 	close(bt.done)

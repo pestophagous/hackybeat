@@ -9,9 +9,10 @@ import (
 	"github.com/pestophagous/hackybeat/util/poller"
 )
 
+// Logger should be the only log-sink used by any pollable. This will ensure consistent, centralized output.
 var Logger *lpkg.LogAdapter
 
-var PublisherFunc func(event common.MapStr, opts ...publisher.ClientOption) bool
+var publisherFunc func(event common.MapStr, opts ...publisher.ClientOption) bool
 
 var pollers []*poller.Poller
 
@@ -26,20 +27,35 @@ func init() {
 	}
 }
 
+// Call RegisterPoller to add a poller to the application.
 func RegisterPoller(p *poller.Poller) {
 	pollers = append(pollers, p)
 }
 
-func ApplyToAllPollers(f func(p *poller.Poller)) {
+// InstallPublisherFunc should be called by outer application code, not by the pollables. It should be called during start-up.
+func InstallPublisherFunc(f func(event common.MapStr, opts ...publisher.ClientOption) bool) {
+	publisherFunc = f
+}
+
+func applyToAllPollers(f func(p *poller.Poller)) {
 	for _, p := range pollers {
 		f(p)
 	}
 }
 
+func LaunchAllPollers() {
+	applyToAllPollers((*poller.Poller).BeginBackgroundPolling)
+}
+
+func StopAllPollers() {
+	applyToAllPollers((*poller.Poller).Stop)
+}
+
+// BeatsPublish is intended for use by the pollables. To be called for each event detected by a pollable.
 func BeatsPublish(event common.MapStr, opts ...publisher.ClientOption) {
-	if PublisherFunc == nil {
-		panic("Must not call BeatsPublish prior to installing PublisherFunc.")
+	if publisherFunc == nil {
+		panic("Must not call BeatsPublish prior to calling InstallPublisherFunc.")
 	}
 
-	PublisherFunc(event, opts...)
+	publisherFunc(event, opts...)
 }
