@@ -14,7 +14,11 @@ leave elasticsearch running but delete all indexes to start fresh
 do as shown in this file as of the specified commit:
     git show fa33320d4e:scripts/README
 
+cd into etc/kibana/
+
 invoke etc/kibana/load.sh (from commit 07f591366ea) to load the index-pattern
+(Note: load.sh won't find any 'search', 'visualization', or 'dashboard' json, but it will
+ succeed on 'index pattern logstash-*')
 
 restart kibana, logstash, hackybeat
 
@@ -43,3 +47,5 @@ kibana should then show a page with 'This page lists every field in the logstash
 it is then possible to make a visualization by categories. it looks like this:
 
     http://screencast.com/t/2pL61nY6he
+
+    (Except now it looks BETTER than the screencast, due to commit 2c1bab120496c617a81e71bc51f0c982773d8009)
