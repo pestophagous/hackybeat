@@ -1,10 +1,13 @@
 package common
 
 import (
+	"time"
+
 	"github.com/elastic/beats/libbeat/common"
 	"github.com/elastic/beats/libbeat/logp"
 	"github.com/elastic/beats/libbeat/publisher"
 
+	dedupe "github.com/pestophagous/hackybeat/util/deduper"
 	lpkg "github.com/pestophagous/hackybeat/util/logger"
 	"github.com/pestophagous/hackybeat/util/poller"
 )
@@ -15,6 +18,8 @@ var Logger *lpkg.LogWithNilCheck
 var publisherFunc func(event common.MapStr, opts ...publisher.ClientOption) bool
 
 var pollers []*poller.Poller
+
+var deduper *dedupe.Tool
 
 func init() {
 	log := &lpkg.LogAdapter{
@@ -27,6 +32,7 @@ func init() {
 	}
 
 	Logger = &lpkg.LogWithNilCheck{log}
+	deduper = dedupe.NewDeduperTool("hackybeat", Logger)
 }
 
 // Call RegisterPoller to add a poller to the application.
@@ -59,5 +65,9 @@ func BeatsPublish(event common.MapStr, opts ...publisher.ClientOption) {
 		panic("Must not call BeatsPublish prior to calling InstallPublisherFunc.")
 	}
 
-	publisherFunc(event, opts...)
+	var ctime common.Time = event["@timestamp"].(common.Time)
+	var ttime time.Time = time.Time(ctime)
+	if deduper.IsGrantingApproval(ttime, event["type"].(string), event) {
+		publisherFunc(event, opts...)
+	}
 }
