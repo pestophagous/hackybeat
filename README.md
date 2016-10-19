@@ -1,6 +1,6 @@
 ## Fun with Elastic Beats
 
-Built on top of [https://github.com/elastic/beats](https://github.com/elastic/beats), with inspiration from: [the community beats](https://www.elastic.co/guide/en/beats/libbeat/master/community-beats.html) 
+Built on top of [https://github.com/elastic/beats](https://github.com/elastic/beats), with inspiration from [the community beats](https://www.elastic.co/guide/en/beats/libbeat/master/community-beats.html).
 
 ### Goals
 
@@ -24,7 +24,7 @@ Several community beats would benefit from a built-in de-dupe service.  Beats th
 
 ### Proof of Concept
 
-This repository contains a reusable `util/poller` component and a reusable `util/deduper` component.  These components transparently benefit the `rss` sample beat and the `gitlog` sample beat without the beats needing to know anything about it.
+This repository contains a reusable `util/poller` component and a reusable `util/deduper` component.  These components transparently benefit the `rss` sample beat and the `gitlog` sample beat *without the beats needing to know anything about it.*
 
 ![architecture diagram](https://raw.githubusercontent.com/pestophagous/hackybeat/master/doc/arch_dep.png)
 
