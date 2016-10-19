@@ -46,7 +46,7 @@ kibana should then show a page with 'This page lists every field in the logstash
 
 it is then possible to make a visualization by categories. it looks like this:
 
-    http://screencast.com/t/2pL61nY6he
+[http://screencast.com/t/2pL61nY6he](http://screencast.com/t/2pL61nY6he)
 
-    (Except now it looks BETTER than the screencast, due to commit
-     https://github.com/pestophagous/hackybeat/commit/2c1bab120496c617a81e71bc51f0c982773d8009 )
+(Except now it looks BETTER than the screencast, due to commit
+ [https://github.com/pestophagous/hackybeat/commit/2c1bab120496c617a81e71bc51f0c982773d8009](https://github.com/pestophagous/hackybeat/commit/2c1bab120496c617a81e71bc51f0c982773d8009) )
