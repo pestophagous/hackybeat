@@ -5,12 +5,10 @@ import (
 	"github.com/libgit2/git2go"
 
 	pollcommon "github.com/pestophagous/hackybeat/beats-pollables/common"
-	"github.com/pestophagous/hackybeat/util/poller"
 )
 
 func init() {
-	p := poller.NewPoller(pollcommon.Logger, newPolledGitLog(pollcommon.Logger, receiveItem))
-	pollcommon.RegisterPoller(p)
+	pollcommon.RegisterPollable(newPolledGitLog(pollcommon.Logger, receiveItem))
 }
 
 // type polledFeed struct calls here when an item is ready. this method converts and forwards the item to libbeat publisher

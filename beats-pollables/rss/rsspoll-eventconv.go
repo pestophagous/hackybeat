@@ -7,12 +7,10 @@ import (
 	rss "github.com/jteeuwen/go-pkg-rss"
 
 	pollcommon "github.com/pestophagous/hackybeat/beats-pollables/common"
-	"github.com/pestophagous/hackybeat/util/poller"
 )
 
 func init() {
-	p := poller.NewPoller(pollcommon.Logger, newPolledFeed(pollcommon.Logger, receiveRssItem))
-	pollcommon.RegisterPoller(p)
+	pollcommon.RegisterPollable(newPolledFeed(pollcommon.Logger, receiveRssItem))
 }
 
 func choosyAppend(strings []string, s string) []string {

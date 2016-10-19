@@ -35,8 +35,9 @@ func init() {
 	deduper = dedupe.NewDeduperTool("hackybeat", Logger)
 }
 
-// Call RegisterPoller to add a poller to the application.
-func RegisterPoller(p *poller.Poller) {
+// Call RegisterPollable to add a poller to the application.
+func RegisterPollable(pollable poller.Pollable) {
+	p := poller.NewPoller(Logger, pollable)
 	pollers = append(pollers, p)
 }
 
