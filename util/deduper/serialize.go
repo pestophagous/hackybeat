@@ -44,24 +44,24 @@ type jsonMaker struct {
 	logger *lpkg.LogWithNilCheck
 }
 
+func (this *gobMaker) InstanceIdForLogging() string {
+	return "gobMaker"
+}
+
+func (this *jsonMaker) InstanceIdForLogging() string {
+	return "jsonMaker"
+}
+
 func (this *gobMaker) makeBlob(object interface{}) []byte {
 	var blob bytes.Buffer
 	enc := gob.NewEncoder(&blob)
 	err := enc.Encode(object)
-
-	if err != nil {
-		panic(err)
-	}
-	//this.logPossibleFailureOf("enc.Encode blob", err)
+	this.logger.LogPossibleFailureOf("enc.Encode blob", this, err)
 	return blob.Bytes()
 }
 
 func (this *jsonMaker) makeBlob(object interface{}) []byte {
 	rslt, err := json.Marshal(object)
-
-	if err != nil {
-		panic(err)
-	}
-	//this.logPossibleFailureOf("enc.Encode blob", err)
+	this.logger.LogPossibleFailureOf("json.Marshal", this, err)
 	return rslt
 }

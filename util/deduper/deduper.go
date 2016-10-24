@@ -37,7 +37,7 @@ func NewDeduperTool(uniqueNamespace string, log *lpkg.LogWithNilCheck) *Tool {
 	db, err := sql.Open("sqlite3", dbfile)
 
 	if err != nil {
-		t.logFailureOf("sqlite3.Open", err)
+		t.logger.LogFailureOf("sqlite3.Open", t, err)
 		// We can imagine several possible fallback approaches, but have yet to implement any.
 		// One approach would be to use the sqlite3 ':memory:' all-in-memory db, so we would have per-session deduping
 		// at least.
@@ -105,7 +105,7 @@ func (this *Tool) existenceTest(q string, args ...interface{}) bool {
 
 	rows, err = this.db.Query(q, args...)
 	if err != nil {
-		this.logFailureOf("SELECT EXISTS", err)
+		this.logger.LogFailureOf("SELECT EXISTS", this, err)
 		return result
 	}
 	defer rows.Close()
@@ -114,7 +114,7 @@ func (this *Tool) existenceTest(q string, args ...interface{}) bool {
 
 	var existence bool = false
 	err = rows.Scan(&existence)
-	this.logPossibleFailureOf("sql.Rows.Scan", err)
+	this.logger.LogPossibleFailureOf("sql.Rows.Scan", this, err)
 	if err == nil {
 		result = existence
 	}
@@ -153,7 +153,7 @@ func (this *Tool) createTable() {
 	// TODO: use something like an md5 hash/checksum (hence col name 'digest') instead of the blob/gob
 	q := fmt.Sprintf("CREATE TABLE %s (eventtime integer, eventtype text, digest blob)", tableName)
 	_, err := this.db.Exec(q)
-	this.logPossibleFailureOf("sqlite3.Exec create table", err)
+	this.logger.LogPossibleFailureOf("sqlite3.Exec create table", this, err)
 }
 
 func (this *Tool) cutoffTimeForPurge() time.Time {
@@ -166,17 +166,9 @@ func (this *Tool) purgeOldValues() {
 	cutoff := this.cutoffTimeForPurge()
 
 	_, err := this.db.Exec(q, cutoff.UnixNano())
-	this.logPossibleFailureOf("sqlite3.Exec delete", err)
+	this.logger.LogPossibleFailureOf("sqlite3.Exec delete", this, err)
 }
 
-// convenience function if you're already inside a block with a proven non-nil error:
-func (this *Tool) logFailureOf(what string, e error) {
-	this.logger.Err("%s failed on %v. %v", what, this.instanceName, e)
-}
-
-// convenience function when an error may or may not be nil, but you only want to log when it's non-nil:
-func (this *Tool) logPossibleFailureOf(what string, e error) {
-	if e != nil {
-		this.logFailureOf(what, e)
-	}
+func (this *Tool) InstanceIdForLogging() string {
+	return fmt.Sprintf("deduper Tool %v", this.instanceName)
 }
