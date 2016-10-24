@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/gob"
+	"flag"
 	"fmt"
 	"time"
 
@@ -31,7 +32,11 @@ func NewDeduperTool(uniqueNamespace string, log *lpkg.LogWithNilCheck) *Tool {
 		db:           nil,
 	}
 
-	db, err := sql.Open("sqlite3", t.instanceName+".db")
+	var dbfile string = t.instanceName + ".db"
+	if runningTestsNotActualProgram() {
+		dbfile = ":memory:"
+	}
+	db, err := sql.Open("sqlite3", dbfile)
 
 	if err != nil {
 		t.logFailureOf("sqlite3.Open", err)
@@ -47,6 +52,14 @@ func NewDeduperTool(uniqueNamespace string, log *lpkg.LogWithNilCheck) *Tool {
 	}
 
 	return t
+}
+
+func runningTestsNotActualProgram() bool {
+	// http://stackoverflow.com/a/36666114/10278
+	if flag.Lookup("test.v") != nil {
+		return true
+	}
+	return false
 }
 
 func (this *Tool) IsGrantingApproval(eventTime time.Time, eventType string, object interface{}) bool {
