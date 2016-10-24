@@ -20,7 +20,7 @@ As I implemented these 2 beats, I noticed that they each needed some kind of `ti
 
 Those two needs are not unique to my sample beats. [Every community beat](https://www.elastic.co/guide/en/beats/libbeat/master/community-beats.html) implements its own `ticker` or some form of looping.
 
-Several community beats would benefit from a built-in de-dupe service.  Beats that need de-duping are those that periodically open and read from the same file or feed, as opposed to beats that always take one discrete point-in-time measurement during their hearbeat.
+Several community beats would benefit from a built-in de-dupe service.  Beats that need de-duping are those that periodically open and read from the same file or feed, as opposed to beats that always take one discrete point-in-time measurement during their heartbeat.
 
 ### Proof of Concept
 
