@@ -62,6 +62,11 @@ func StopAllPollers() {
 
 // BeatsPublish is intended for use by the pollables. To be called for each event detected by a pollable.
 func BeatsPublish(event common.MapStr, opts ...publisher.ClientOption) {
+	beatsPublish(event, opts...)
+}
+
+// BeatsPublish is intended for use by the pollables. To be called for each event detected by a pollable.
+func beatsPublish(event common.MapStr, opts ...publisher.ClientOption) bool {
 	if publisherFunc == nil {
 		panic("Must not call BeatsPublish prior to calling InstallPublisherFunc.")
 	}
@@ -70,5 +75,8 @@ func BeatsPublish(event common.MapStr, opts ...publisher.ClientOption) {
 	var ttime time.Time = time.Time(ctime)
 	if deduper.IsGrantingApproval(ttime, event["type"].(string), event) {
 		publisherFunc(event, opts...)
+		return true
 	}
+
+	return false
 }
