@@ -1,6 +1,7 @@
 package gitlog
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/libgit2/git2go"
@@ -43,16 +44,8 @@ func (this *gitLog) OnShutdown() {
 	this.logger.ReleaseLog()
 }
 
-// convenience function if you're already inside a block with a proven non-nil error:
-func (this *gitLog) logFailureOf(what string, e error) {
-	this.logger.Err("%s failed on %v. %v", what, gitRepoPath, e)
-}
-
-// convenience function when an error may or may not be nil, but you only want to log when it's non-nil:
-func (this *gitLog) logPossibleFailureOf(what string, e error) {
-	if e != nil {
-		this.logFailureOf(what, e)
-	}
+func (this *gitLog) InstanceIdForLogging() string {
+	return fmt.Sprintf("gitLog %v", gitRepoPath)
 }
 
 func (this *gitLog) DoPoll() time.Duration {
@@ -63,24 +56,24 @@ func (this *gitLog) DoPoll() time.Duration {
 
 	repo, err = git.OpenRepository(gitRepoPath)
 	if err != nil {
-		this.logFailureOf("OpenRepository", err)
+		this.logger.LogFailureOf("OpenRepository", this, err)
 		return longDuration
 	}
 	defer repo.Free()
 
 	walk, err = repo.Walk()
 	if err != nil {
-		this.logFailureOf("Repository.Walk", err)
+		this.logger.LogFailureOf("Repository.Walk", this, err)
 		return longDuration
 	}
 	defer walk.Free()
 
 	err = walk.PushRef("HEAD")
-	this.logPossibleFailureOf("RevWalk.PushRef(\"HEAD\")", err)
+	this.logger.LogPossibleFailureOf("RevWalk.PushRef(\"HEAD\")", this, err)
 
 	// the fun happens here. this is how we visit commits:
 	err2 := walk.Iterate(this.onVisitCommit)
-	this.logPossibleFailureOf("RevWalk.Iterate", err2)
+	this.logger.LogPossibleFailureOf("RevWalk.Iterate", this, err2)
 
 	if err != nil || err2 != nil {
 		return longDuration
