@@ -1,9 +1,7 @@
 package deduper
 
 import (
-	"bytes"
 	"database/sql"
-	"encoding/gob"
 	"flag"
 	"fmt"
 	"time"
@@ -73,14 +71,11 @@ func (this *Tool) IsGrantingApproval(eventTime time.Time, eventType string, obje
 		return false // <------- BAILING OUT
 	}
 
-	var blob bytes.Buffer
-	enc := gob.NewEncoder(&blob)
-	err := enc.Encode(object)
-	this.logPossibleFailureOf("enc.Encode blob", err)
+	var blobber blobifier = getSerializer(this.logger)
 
 	// TODO: use something like an md5 hash/checksum (hence col name 'digest') instead of the blob/gob
 	sel := fmt.Sprintf("SELECT EXISTS (SELECT 1 from %s where eventtype = ? and eventtime = ? and digest = ? LIMIT 1) AS existence", tableName)
-	if this.existenceTest(sel, eventType, eventTime.UnixNano(), blob.Bytes()) {
+	if this.existenceTest(sel, eventType, eventTime.UnixNano(), blobber.makeBlob(object)) {
 		// found a prior.
 		// caller should not proceed to consume the event.
 		return false // <------- BAILING OUT
@@ -95,7 +90,7 @@ func (this *Tool) IsGrantingApproval(eventTime time.Time, eventType string, obje
 	}
 	defer stmt.Close()
 
-	_, err2 := stmt.Exec(eventTime.UnixNano(), eventType, blob.Bytes())
+	_, err2 := stmt.Exec(eventTime.UnixNano(), eventType, blobber.makeBlob(object))
 	if err2 != nil {
 		panic(err2)
 	}
