@@ -1,3 +1,5 @@
+[![GoReportCard](http://goreportcard.com/badge/github.com/pestophagous/hackybeat)](http://goreportcard.com/report/github.com/pestophagous/hackybeat)
+
 ## Fun with Elastic Beats
 
 Built on top of [https://github.com/elastic/beats](https://github.com/elastic/beats), with inspiration from [the community beats](https://www.elastic.co/guide/en/beats/libbeat/master/community-beats.html).
