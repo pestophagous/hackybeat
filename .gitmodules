@@ -13,3 +13,42 @@
 [submodule "vendor/github.com/eapache/queue"]
 	path = vendor/github.com/eapache/queue
 	url = https://github.com/eapache/queue
+[submodule "vendor/github.com/elastic/beats"]
+	path = vendor/github.com/elastic/beats
+	url = https://github.com/elastic/beats
+[submodule "vendor/github.com/elastic/go-lumber"]
+	path = vendor/github.com/elastic/go-lumber
+	url = https://github.com/elastic/go-lumber
+[submodule "vendor/github.com/elastic/go-ucfg"]
+	path = vendor/github.com/elastic/go-ucfg
+	url = https://github.com/elastic/go-ucfg
+[submodule "vendor/github.com/garyburd/redigo"]
+	path = vendor/github.com/garyburd/redigo
+	url = https://github.com/garyburd/redigo
+[submodule "vendor/github.com/golang/snappy"]
+	path = vendor/github.com/golang/snappy
+	url = https://github.com/golang/snappy
+[submodule "vendor/github.com/joeshaw/multierror"]
+	path = vendor/github.com/joeshaw/multierror
+	url = https://github.com/joeshaw/multierror
+[submodule "vendor/github.com/jteeuwen/go-pkg-rss"]
+	path = vendor/github.com/jteeuwen/go-pkg-rss
+	url = https://github.com/jteeuwen/go-pkg-rss
+[submodule "vendor/github.com/jteeuwen/go-pkg-xmlx"]
+	path = vendor/github.com/jteeuwen/go-pkg-xmlx
+	url = https://github.com/jteeuwen/go-pkg-xmlx
+[submodule "vendor/github.com/klauspost/compress"]
+	path = vendor/github.com/klauspost/compress
+	url = https://github.com/klauspost/compress
+[submodule "vendor/github.com/klauspost/cpuid"]
+	path = vendor/github.com/klauspost/cpuid
+	url = https://github.com/klauspost/cpuid
+[submodule "vendor/github.com/klauspost/crc32"]
+	path = vendor/github.com/klauspost/crc32
+	url = https://github.com/klauspost/crc32
+[submodule "vendor/github.com/libgit2/git2go"]
+	path = vendor/github.com/libgit2/git2go
+	url = https://github.com/libgit2/git2go
+[submodule "vendor/github.com/mattn/go-sqlite3"]
+	path = vendor/github.com/mattn/go-sqlite3
+	url = https://github.com/mattn/go-sqlite3
