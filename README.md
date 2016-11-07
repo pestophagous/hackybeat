@@ -1,4 +1,4 @@
-[![GoReportCard](http://goreportcard.com/badge/github.com/pestophagous/hackybeat)](http://goreportcard.com/report/github.com/pestophagous/hackybeat)
+[![GoReportCard](https://goreportcard.com/badge/github.com/pestophagous/hackybeat)](https://goreportcard.com/report/github.com/pestophagous/hackybeat)
 
 ## Fun with Elastic Beats
 
@@ -38,4 +38,4 @@ Architectural dependency diagram powered in part by: [https://github.com/kisielk
 
 You know how to reach me :)
 
-If you don't know how, then here's one way: http://bit.ly/25XJBhy 
+If you don't know how, then here's one way: https://bit.ly/25XJBhy
