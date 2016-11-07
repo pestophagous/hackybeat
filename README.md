@@ -32,6 +32,19 @@ This repository contains a reusable `util/poller` component and a reusable `util
 
 Architectural dependency diagram powered in part by: [https://github.com/kisielk/godepgraph](https://github.com/kisielk/godepgraph)
 
+### Repeatable Build
+
+```
+mkdir cleanroom
+cd cleanroom
+export GOPATH=$PWD
+mkdir -p src/github.com/pestophagous/hackybeat
+git clone https://github.com/pestophagous/hackybeat.git src/github.com/pestophagous/hackybeat
+cd src/github.com/pestophagous/hackybeat
+git submodule update --init --recursive # assumes that .gitmodules made it to default branch. otherwise check out relevant branch
+go build -v main.go
+```
+
 ----------
 
 ### Questions?
